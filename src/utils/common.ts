@@ -87,3 +87,155 @@ export function extractContentInParentheses(text: string): string {
 
 	return '';
 }
+
+/**
+ * 从路径中提取路径参数
+ * @param path API 路径,如 /v2/technical_reviews/:id
+ * @returns 路径参数数组,如 ['id']
+ */
+export function extractPathParams(path: string): string[] {
+	const params: string[] = [];
+	const regex = /:([a-zA-Z_][a-zA-Z0-9_]*)/g;
+	let match;
+	while ((match = regex.exec(path)) !== null) {
+		params.push(match[1]);
+	}
+	return params;
+}
+
+/**
+ * 判断是否为 RESTful 风格的路径(包含路径参数或纯名词资源路径)
+ * @param path API 路径
+ * @returns 是否为 RESTful 路径
+ */
+export function isRestfulPath(path: string): boolean {
+	// 如果包含路径参数，肯定是 RESTful
+	if (/:([a-zA-Z_][a-zA-Z0-9_]*)/.test(path)) {
+		return true;
+	}
+
+	// 提取路径的最后一段
+	const cleanPath = path.replace(/^\/v\d+\//, '').replace(/^\//, '');
+	const parts = cleanPath.split('/');
+	const lastPart = parts[parts.length - 1] || '';
+
+	// 常见动词列表（传统风格通常在路径中包含动词）
+	const actionVerbs = [
+		'get',
+		'post',
+		'put',
+		'delete',
+		'create',
+		'update',
+		'remove',
+		'fetch',
+		'add',
+		'set',
+		'list',
+		'query',
+		'search',
+		'find',
+		'check',
+		'verify',
+		'send',
+		'submit',
+		'upload',
+		'download',
+		'import',
+		'export',
+	];
+
+	// 检查最后一段是否包含动词（不区分大小写）
+	const hasVerb = actionVerbs.some((verb) => lastPart.toLowerCase().includes(verb));
+
+	// 如果不包含动词，认为是 RESTful 风格的纯名词资源路径
+	return !hasVerb;
+}
+
+/**
+ * 将路径转换为短横线格式的文件名基础部分
+ * @param path API 路径,如 /v2/technical_reviews/:id
+ * @returns 短横线格式的名称,如 technical-reviews-by-id
+ */
+export function pathToHyphenCase(path: string): string {
+	// 移除开头的斜杠和版本号前缀
+	const cleanPath = path.replace(/^\/v\d+\//, '').replace(/^\//, '');
+
+	// 分割路径
+	const parts = cleanPath.split('/');
+
+	// 处理每个部分:将下划线转为短横线,跳过路径参数（除非是最后一部分）
+	const processedParts: string[] = [];
+	for (let i = 0; i < parts.length; i++) {
+		const part = parts[i];
+		if (part.startsWith(':')) {
+			// 只有当参数是最后一部分时，才添加 by-param
+			if (i === parts.length - 1) {
+				const paramName = part.substring(1);
+				processedParts.push(`by-${paramName.replace(/_/g, '-')}`);
+			}
+			// 否则跳过中间的路径参数
+		} else {
+			// 普通路径:将下划线转为短横线
+			processedParts.push(part.replace(/_/g, '-'));
+		}
+	}
+
+	return processedParts.join('-');
+}
+
+/**
+ * 生成 RESTful 风格的文件名
+ * @param method HTTP 方法,如 GET, POST, PUT, DELETE
+ * @param path API 路径,如 /v2/technical_reviews/:id
+ * @returns 文件名(不含扩展名),如 get-technical-reviews-by-id
+ */
+export function generateRestfulFileName(method: string, path: string): string {
+	const httpMethod = method.toLowerCase();
+	const pathName = pathToHyphenCase(path);
+	return `${httpMethod}-${pathName}`;
+}
+
+/**
+ * 将路径转换为大驼峰格式的接口名称基础部分
+ * @param path API 路径,如 /v2/technical_reviews/:id
+ * @returns 大驼峰格式的名称,如 TechnicalReviewsById
+ */
+export function pathToPascalCase(path: string): string {
+	// 移除开头的斜杠和版本号前缀
+	const cleanPath = path.replace(/^\/v\d+\//, '').replace(/^\//, '');
+
+	// 分割路径
+	const parts = cleanPath.split('/');
+
+	// 处理每个部分：跳过路径参数（除非是最后一部分）
+	const processedParts: string[] = [];
+	for (let i = 0; i < parts.length; i++) {
+		const part = parts[i];
+		if (part.startsWith(':')) {
+			// 只有当参数是最后一部分时，才添加 ByParam
+			if (i === parts.length - 1) {
+				const paramName = part.substring(1);
+				processedParts.push('By' + toPascalCase(paramName));
+			}
+			// 否则跳过中间的路径参数
+		} else {
+			// 普通路径:转换为大驼峰
+			processedParts.push(toPascalCase(part));
+		}
+	}
+
+	return processedParts.join('');
+}
+
+/**
+ * 生成 RESTful 风格的接口名称
+ * @param method HTTP 方法,如 GET, POST, PUT, DELETE
+ * @param path API 路径,如 /v2/technical_reviews/:id
+ * @returns 接口名称,如 GetTechnicalReviewsById
+ */
+export function generateRestfulInterfaceName(method: string, path: string): string {
+	const httpMethod = toPascalCase(method.toLowerCase());
+	const pathName = pathToPascalCase(path);
+	return `${httpMethod}${pathName}`;
+}

@@ -1,17 +1,13 @@
 {
-	"name": "yapi-to-zod-resultful",
-	"displayName": "Yapi To Zod For Resultful",
+	"name": "yapi-to-zod-pro",
+	"displayName": "Yapi To Zod Pro",
 	"version": "0.1.0",
 	"private": true,
 	"description": "generate Zod interface definition files through Yapi documentation",
 	"categories": [
 		"Other"
 	],
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/Lim91/yapi-to-zod"
-	},
-	"publisher": "Jiang",
+	"publisher": "Dj",
 	"main": "./dist/extension.js",
 	"scripts": {
 		"package:vsix": "vsce package",
@@ -38,11 +34,11 @@
 		"commands": [
 			{
 				"command": "extension.newConfigProfile",
-				"title": "YapiToZod: 生成配置文件"
+				"title": "YapiToZodPro: 生成配置文件"
 			},
 			{
 				"command": "extension.newApiTemplate",
-				"title": "YapiToZod: 生成Api声明文件"
+				"title": "YapiToZodPro: 生成Api声明文件"
 			}
 		],
 		"configuration": {
@@ -62,11 +58,19 @@
 		"menus": {
 			"explorer/context": [
 				{
+					"command": "extension.newConfigProfile",
+					"group": "navigation"
+				},
+				{
 					"command": "extension.newApiTemplate",
 					"group": "navigation"
 				}
 			],
 			"editor/context": [
+				{
+					"command": "extension.newApiTemplate",
+					"group": "navigation"
+				},
 				{
 					"command": "extension.newApiTemplate",
 					"group": "navigation"

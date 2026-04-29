@@ -3,6 +3,15 @@ import { IYapiResponse } from './api/types/yapi-types';
 import { CONFIG_FILE_NAME } from './utils/constant/common';
 import { showErrMsg } from './utils/message';
 
+/**
+ * RESTful 模式配置类型
+ */
+export type RestfulMode =
+	| 'auto' // 自动判断（默认）
+	| 'force' // 强制使用 RESTful 命名
+	| 'legacy' // 强制使用传统命名
+	| ((path: string, method: string) => boolean); // 自定义判断函数
+
 export interface IProjectConfig {
 	header?: string[];
 	genRequest?(
@@ -23,6 +32,14 @@ export interface IProjectConfig {
 	): string;
 	responseKey?: string;
 	responseCustomKey?: string;
+	/**
+	 * RESTful 模式配置
+	 * - 'auto': 自动判断（默认）
+	 * - 'force': 强制使用 RESTful 命名规则
+	 * - 'legacy': 强制使用传统命名规则
+	 * - 自定义函数: (path, method) => boolean，返回 true 表示使用 RESTful 命名
+	 */
+	restfulMode?: RestfulMode;
 }
 
 /**

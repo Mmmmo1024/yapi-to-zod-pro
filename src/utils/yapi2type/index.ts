@@ -1,11 +1,13 @@
 import type { IYapiProjectRes } from '../../api/get-project-detail';
 import type { IYapiResponse } from '../../api/types/yapi-types';
-import Yapi2ZodConfig, { IProjectConfig } from '../../Yapi2ZodConfig';
+import Yapi2ZodConfig, { IProjectConfig, RestfulMode } from '../../Yapi2ZodConfig';
 import {
 	extractContentInParentheses,
 	isEmptyObject,
 	isObject,
 	toPascalCase,
+	generateRestfulInterfaceName,
+	isRestfulPath,
 } from '../common';
 import { SERVER_URL } from '../constant/yapi';
 import { ResponseKeyEnum } from './config';
@@ -23,9 +25,51 @@ import {
 import { parseJson } from './utils';
 
 /**
+ * 判断是否应该使用 RESTful 命名规则
+ * @param path API 路径
+ * @param method HTTP 方法
+ * @param restfulMode 配置的模式
+ * @returns 是否使用 RESTful 命名
+ */
+function shouldUseRestfulNaming(
+	path: string,
+	method: string,
+	restfulMode?: RestfulMode,
+): boolean {
+	// 如果没有配置，使用自动判断（默认行为）
+	if (!restfulMode || restfulMode === 'auto') {
+		return isRestfulPath(path);
+	}
+
+	// 强制使用 RESTful 命名
+	if (restfulMode === 'force') {
+		return true;
+	}
+
+	// 强制使用传统命名
+	if (restfulMode === 'legacy') {
+		return false;
+	}
+
+	// 自定义判断函数
+	if (typeof restfulMode === 'function') {
+		return restfulMode(path, method);
+	}
+
+	// 默认使用自动判断
+	return isRestfulPath(path);
+}
+
+/**
  * @description 获取接口名称
  */
-const getApiName = (data: IYapiResponse) => {
+const getApiName = (data: IYapiResponse, restfulMode?: RestfulMode) => {
+	// 根据配置判断是否使用 RESTful 命名规则
+	if (shouldUseRestfulNaming(data?.path || '', data.method, restfulMode)) {
+		return generateRestfulInterfaceName(data.method, data.path);
+	}
+
+	// 传统风格：使用原有逻辑
 	const paths = data?.path?.split(/[/.]/g) || [];
 	const lastWord = paths[paths.length - 1];
 	return toPascalCase(lastWord);
@@ -163,9 +207,9 @@ export async function data2Type(
 ) {
 	const yapi2ZodConfig = Yapi2ZodConfig.getInstance();
 	const projectConfig = yapi2ZodConfig.projectConfig;
-	const { responseKey, responseCustomKey } = projectConfig || {};
+	const { responseKey, responseCustomKey, restfulMode } = projectConfig || {};
 
-	const interfaceName = getApiName(data); // 接口名称，大驼峰写法
+	const interfaceName = getApiName(data, restfulMode); // 接口名称，大驼峰写法
 	const reqModelName = getModelName(interfaceName, 'Req');
 	const resModelName = getModelName(interfaceName, 'Res');
 	const reqQuery = data?.req_query?.length

@@ -6,6 +6,8 @@ import { showErrMsg, showInfoMsg } from '../utils/message';
 import { getSelectedDirPath } from '../utils/path';
 import { data2Type } from '../utils/yapi2type';
 import Yapi2ZodConfig from '../Yapi2ZodConfig';
+import { generateRestfulFileName, isRestfulPath } from '../utils/common';
+import type { RestfulMode } from '../Yapi2ZodConfig';
 
 /**
  * 从接口文档路径中提取项目id和接口id
@@ -39,6 +41,42 @@ function convertUnderscoreToHyphen(input: string): string {
 	return input.replace(/_/g, '-');
 }
 
+/**
+ * 判断是否应该使用 RESTful 命名规则
+ * @param path API 路径
+ * @param method HTTP 方法
+ * @param restfulMode 配置的模式
+ * @returns 是否使用 RESTful 命名
+ */
+function shouldUseRestfulNaming(
+	path: string,
+	method: string,
+	restfulMode?: RestfulMode,
+): boolean {
+	// 如果没有配置，使用自动判断（默认行为）
+	if (!restfulMode || restfulMode === 'auto') {
+		return isRestfulPath(path);
+	}
+
+	// 强制使用 RESTful 命名
+	if (restfulMode === 'force') {
+		return true;
+	}
+
+	// 强制使用传统命名
+	if (restfulMode === 'legacy') {
+		return false;
+	}
+
+	// 自定义判断函数
+	if (typeof restfulMode === 'function') {
+		return restfulMode(path, method);
+	}
+
+	// 默认使用自动判断
+	return isRestfulPath(path);
+}
+
 async function generateCode(uri: Uri): Promise<void> {
 	const urlPath = await window.showInputBox({
 		title: '请输入接口文档地址',
@@ -62,10 +100,30 @@ async function generateCode(uri: Uri): Promise<void> {
 		getApiDetail(interfaceId),
 		projectId ? getProjectDetail(projectId) : undefined,
 	]);
-	// 生成文件名
-	const paths = interfaceRes.data?.path?.split(/[/.]/g) || [];
-	const lastWord = paths[paths.length - 1];
-	const fileName = convertUnderscoreToHyphen(lastWord) + '.ts';
+
+	// 获取配置中的 RESTful 模式
+	const yapi2ZodConfig = Yapi2ZodConfig.getInstance();
+	const restfulMode = yapi2ZodConfig.projectConfig?.restfulMode;
+
+	// 生成文件名:根据配置和路径类型选择合适的策略
+	let fileName: string;
+	if (
+		shouldUseRestfulNaming(
+			interfaceRes.data?.path || '',
+			interfaceRes.data.method,
+			restfulMode,
+		)
+	) {
+		// RESTful 风格:结合 HTTP 方法和路径生成唯一文件名
+		fileName =
+			generateRestfulFileName(interfaceRes.data.method, interfaceRes.data.path) + '.ts';
+	} else {
+		// 传统风格:使用原有逻辑
+		const paths = interfaceRes.data?.path?.split(/[/.]/g) || [];
+		const lastWord = paths[paths.length - 1];
+		fileName = convertUnderscoreToHyphen(lastWord) + '.ts';
+	}
+
 	// 生成文件路径并判断是否存在
 	const apiFileUri = Uri.joinPath(Uri.file(dirPath), fileName);
 	const apiFileExists = await workspace.fs.stat(apiFileUri).then(
