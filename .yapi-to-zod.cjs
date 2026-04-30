@@ -2,7 +2,7 @@ module.exports = () => {
 	return {
 		/** 头部内容，可以填写导入的请求实例等 */
 		header: [],
-		
+
 		/**
 		 * RESTful 模式配置（可选）
 		 * - 'auto': 自动判断（默认），根据路径是否包含动词来识别
@@ -18,13 +18,13 @@ module.exports = () => {
 		// restfulMode: 'auto',     // 默认：自动判断
 		// restfulMode: 'force',    // 强制所有接口使用 RESTful 命名
 		// restfulMode: 'legacy',   // 强制所有接口使用传统命名
-		
+
 		// 自定义判断示例：只对特定路径使用 RESTful 命名
 		// restfulMode: (path, method) => {
 		//   // 只对 /v2/ 开头的路径使用 RESTful 命名
 		//   return path.startsWith('/v2/');
 		// },
-		
+
 		/**
 		 * 生成请求内容
 		 * @param {object} param0
@@ -35,8 +35,8 @@ module.exports = () => {
 		 * @param {string} param0.apiPath 接口路径
 		 * @param {object} yapiData
 		 */
-		genRequest({comment, interfaceName, hasReqDefine, hasResDefine, apiPath}, yapiData) {
-			//
+		genRequest({ comment, interfaceName, reqModelName, resModelName, apiPath }, yapiData) {
+			// 如果是RESTful风格，接口路径需要自行把动态参数替换成想要的参数
 		}
 	};
 };
