@@ -1,4 +1,4 @@
-# yapi-to-zod README
+# yapi-to-zod-pro README
 
 vscode插件，通过yapi接口返回的数据生成`zod`接口定义文件
 
@@ -8,14 +8,14 @@ vscode插件，通过yapi接口返回的数据生成`zod`接口定义文件
 
 #### 1、配置Yapi帐号信息
 
-在`设置`=>`扩展`=>`Yapi To Zod`中配置yapi帐号信息
+在`设置`=>`扩展`=>`Yapi To Zod Pro`中配置yapi帐号信息
 
 <img src="https://gitee.com/limya/pico-imgs/raw/master/imgs/config.png" width="600" />
 
 #### 2、生成配置文件
 
-使用快捷键`F1`或`cmd/ctrl+shift+p`调出命令窗口，输入`YapiToZod`，
-选中`YapiToZod: 生成配置文件`命令。
+使用快捷键`F1`或`cmd/ctrl+shift+p`调出命令窗口，输入`YapiToZodPro`，
+选中`YapiToZodPro: 生成配置文件`命令。
 
 <img src="https://gitee.com/limya/pico-imgs/raw/master/imgs/command.png" width="600" />
 
@@ -101,7 +101,7 @@ DELETE /v2/technical_reviews/:id     -> delete-technical-reviews-by-id.ts
 
 #### 3、生成接口声明文件
 
-在目录中右键选择`YapiToZod：生成Api声明文件`命令
+在目录中右键选择`YapiToZodPro：生成Api声明文件`命令
 
 <img src="https://gitee.com/limya/pico-imgs/raw/master/imgs/create-api-file.png" width="400" />
 

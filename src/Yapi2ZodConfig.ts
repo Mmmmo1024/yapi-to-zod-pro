@@ -170,6 +170,6 @@ export default class Yapi2ZodConfig {
 	}
 
 	static getPluginConfiguration(field: 'email' | 'password'): string | undefined {
-		return workspace.getConfiguration('yapiToZod').get(field);
+		return workspace.getConfiguration('yapiToZodPro').get(field);
 	}
 }

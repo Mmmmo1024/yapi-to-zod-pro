@@ -2,13 +2,33 @@
 	"name": "yapi-to-zod-pro",
 	"displayName": "Yapi To Zod Pro",
 	"version": "0.1.0",
-	"private": true,
-	"description": "generate Zod interface definition files through Yapi documentation",
+	"description": "Generate Zod interface definition files from YApi documentation with intelligent RESTful API support",
 	"categories": [
+		"Programming Languages",
+		"Snippets",
 		"Other"
 	],
 	"publisher": "Dj",
 	"main": "./dist/extension.js",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Mmmmo1024/yapi-to-zod-pro.git"
+	},
+	"bugs": {
+		"url": "https://github.com/Mmmmo1024/yapi-to-zod-pro/issues"
+	},
+	"homepage": "https://github.com/Mmmmo1024/yapi-to-zod-pro#readme",
+	"keywords": [
+		"yapi",
+		"zod",
+		"typescript",
+		"restful",
+		"api",
+		"codegen",
+		"type-safety",
+		"schema-validation"
+	],
 	"scripts": {
 		"package:vsix": "vsce package",
 		"vscode:prepublish": "yarn run package",
@@ -43,13 +63,13 @@
 		],
 		"configuration": {
 			"type": "object",
-			"title": "Yapi To Zod",
+			"title": "Yapi To Zod Pro",
 			"properties": {
-				"yapiToZod.email": {
+				"yapiToZodPro.email": {
 					"type": "string",
 					"description": "yapi邮箱"
 				},
-				"yapiToZod.password": {
+				"yapiToZodPro.password": {
 					"type": "string",
 					"description": "yapi密码"
 				}
