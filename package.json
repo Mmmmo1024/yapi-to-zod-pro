@@ -8,17 +8,6 @@
 		"Snippets",
 		"Other"
 	],
-	"publisher": "Dj",
-	"main": "./dist/extension.js",
-	"license": "MIT",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/Mmmmo1024/yapi-to-zod-pro.git"
-	},
-	"bugs": {
-		"url": "https://github.com/Mmmmo1024/yapi-to-zod-pro/issues"
-	},
-	"homepage": "https://github.com/Mmmmo1024/yapi-to-zod-pro#readme",
 	"keywords": [
 		"yapi",
 		"zod",
@@ -29,6 +18,17 @@
 		"type-safety",
 		"schema-validation"
 	],
+	"homepage": "https://github.com/Mmmmo1024/yapi-to-zod-pro#readme",
+	"bugs": {
+		"url": "https://github.com/Mmmmo1024/yapi-to-zod-pro/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Mmmmo1024/yapi-to-zod-pro.git"
+	},
+	"license": "MIT",
+	"publisher": "Dj1024",
+	"main": "./dist/extension.js",
 	"scripts": {
 		"package:vsix": "vsce package",
 		"vscode:prepublish": "yarn run package",
